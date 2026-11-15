@@ -1,7 +1,7 @@
-import { Clock, Coffee } from "lucide-react";
+import { Clock, Coffee, ShoppingCart } from "lucide-react";
 import ThemeToggle from "./ThemeToggle.jsx";
 
-export default function Header({ theme, onToggleTheme }) {
+export default function Header({ theme, onToggleTheme, cartCount, onOpenCart }) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
@@ -24,6 +24,22 @@ export default function Header({ theme, onToggleTheme }) {
             <Clock size={14} className="text-brand" aria-hidden="true" />
             08.00–22.00
           </span>
+
+          <button
+            type="button"
+            onClick={onOpenCart}
+            aria-label={`Buka keranjang, ${cartCount} item`}
+            title="Keranjang"
+            className="relative grid size-10 place-items-center rounded-full border border-line bg-surface-2 text-ink transition hover:border-brand hover:text-brand-strong"
+          >
+            <ShoppingCart size={18} aria-hidden="true" />
+            {cartCount > 0 && (
+              <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-brand px-1 text-[10px] font-semibold text-white">
+                {cartCount}
+              </span>
+            )}
+          </button>
+
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </div>

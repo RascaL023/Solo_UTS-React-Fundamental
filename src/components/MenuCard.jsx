@@ -1,4 +1,4 @@
-import { Heart, Info, MessageCircle, Star } from "lucide-react";
+import { Heart, Info, MessageCircle, Plus, Star } from "lucide-react";
 
 const iconButtonClass =
   "grid size-8 place-items-center rounded-full border border-line bg-surface-2 text-muted transition hover:border-brand hover:text-brand-strong";
@@ -9,9 +9,12 @@ export default function MenuCard({
   onToggleFavorite,
   onOpenInfo,
   onOpenComment,
+  onAddToCart,
+  cartQty,
   commentCount,
 }) {
   const isLowStock = menu.stock <= 10;
+  const isStockLimit = cartQty >= menu.stock;
   const favoriteLabel = isFavorite
     ? `Hapus ${menu.name} dari favorit`
     : `Tambahkan ${menu.name} ke favorit`;
@@ -76,6 +79,7 @@ export default function MenuCard({
               }`}
             >
               Sisa {menu.stock}
+              {cartQty > 0 ? ` · ${cartQty} di keranjang` : ""}
             </span>
           </div>
 
@@ -102,6 +106,20 @@ export default function MenuCard({
                   {commentCount}
                 </span>
               )}
+            </button>
+            <button
+              type="button"
+              onClick={() => onAddToCart(menu.id)}
+              disabled={isStockLimit}
+              aria-label={
+                isStockLimit
+                  ? `Stok ${menu.name} sudah maksimal di keranjang`
+                  : `Tambah ${menu.name} ke keranjang`
+              }
+              title={isStockLimit ? "Stok maksimal tercapai" : "Tambah ke keranjang"}
+              className="grid size-8 place-items-center rounded-full bg-brand text-white transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Plus size={16} aria-hidden="true" />
             </button>
           </div>
         </div>

@@ -49,6 +49,8 @@ export default function MainContent({
   onToggleFavorite,
   comments,
   onAddComment,
+  cart,
+  onAddToCart,
 }) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY);
@@ -286,6 +288,8 @@ export default function MainContent({
                 onToggleFavorite={onToggleFavorite}
                 onOpenInfo={setInfoMenu}
                 onOpenComment={setCommentMenu}
+                onAddToCart={onAddToCart}
+                cartQty={cart.find((item) => item.menuId === menu.id)?.qty ?? 0}
                 commentCount={(comments[menu.id] ?? []).length}
               />
             ))}
