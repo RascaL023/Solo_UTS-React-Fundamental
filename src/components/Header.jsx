@@ -1,4 +1,4 @@
-import { Clock, Coffee, ReceiptText, ShoppingCart } from "lucide-react";
+import { Bell, Clock, Coffee, ReceiptText, ShoppingCart } from "lucide-react";
 import ThemeToggle from "./ThemeToggle.jsx";
 
 export default function Header({
@@ -8,6 +8,8 @@ export default function Header({
   onOpenCart,
   historyCount,
   onOpenHistory,
+  unreadCount,
+  onOpenNotifications,
 }) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-md">
@@ -31,6 +33,21 @@ export default function Header({
             <Clock size={14} className="text-brand" aria-hidden="true" />
             08.00–22.00
           </span>
+
+          <button
+            type="button"
+            onClick={onOpenNotifications}
+            aria-label={`Buka notifikasi, ${unreadCount} belum dibaca`}
+            title="Notifikasi"
+            className="relative grid size-10 place-items-center rounded-full border border-line bg-surface-2 text-ink transition hover:border-brand hover:text-brand-strong"
+          >
+            <Bell size={18} aria-hidden="true" />
+            {unreadCount > 0 && (
+              <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-brand px-1 text-[10px] font-semibold text-white">
+                {unreadCount}
+              </span>
+            )}
+          </button>
 
           <button
             type="button"

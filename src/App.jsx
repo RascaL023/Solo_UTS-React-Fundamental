@@ -1,14 +1,17 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import menuData from "./data/menu.js";
 import CartDrawer from "./components/CartDrawer.jsx";
 import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 import HistoryModal from "./components/HistoryModal.jsx";
 import MainContent from "./components/MainContent.jsx";
+import NotificationModal from "./components/NotificationModal.jsx";
 import ReceiptModal from "./components/ReceiptModal.jsx";
+import ToastStack from "./components/ToastStack.jsx";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
+import { useNotifications } from "./hooks/useNotifications.js";
 import { useTheme } from "./hooks/useTheme.js";
-import { calculateTotals, validatePromo } from "./utils/pricing.js";
+import { calculateTotals, formatRupiah, validatePromo } from "./utils/pricing.js";
 
 const initialStock = Object.fromEntries(menuData.map((menu) => [menu.id, menu.stock]));
 
@@ -22,7 +25,10 @@ export default function App() {
   const [promoCode, setPromoCode] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [receipt, setReceipt] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const { notifications, unreadCount, addNotification, markAllRead } = useNotifications();
 
   const menus = useMemo(
     () => menuData.map((menu) => ({ ...menu, stock: stock[menu.id] ?? menu.stock })),
@@ -37,7 +43,25 @@ export default function App() {
   const totals = calculateTotals(cartItems, promoCode);
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0);
 
+  const pushToast = (message, tone = "success") => {
+    setToasts((current) =>
+      [
+        ...current,
+        { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, message, tone },
+      ].slice(-3),
+    );
+  };
+
+  const dismissToast = useCallback((id) => {
+    setToasts((current) => current.filter((toast) => toast.id !== id));
+  }, []);
+
   const toggleFavorite = (menuId) => {
+    const menu = menus.find((item) => item.id === menuId);
+    if (!menu) return;
+
+    const wasFavorite = Boolean(favorites[menuId]);
+
     setFavorites((current) => {
       const next = { ...current };
 
@@ -49,9 +73,21 @@ export default function App() {
 
       return next;
     });
+
+    const message = wasFavorite
+      ? `${menu.name} dihapus dari favorit.`
+      : `${menu.name} ditambahkan ke favorit.`;
+
+    pushToast(message);
+    addNotification({
+      type: "favorite",
+      title: wasFavorite ? "Favorit dihapus" : "Favorit ditambahkan",
+      message,
+    });
   };
 
   const addComment = (menuId, { rating, text }) => {
+    const menu = menus.find((item) => item.id === menuId);
     const comment = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       rating,
@@ -63,11 +99,25 @@ export default function App() {
       ...current,
       [menuId]: [comment, ...(current[menuId] ?? [])],
     }));
+
+    pushToast("Komentar kamu sudah tersimpan.");
+    addNotification({
+      type: "comment",
+      title: "Komentar terkirim",
+      message: `${menu?.name ?? "Menu"} · ${rating} bintang`,
+    });
   };
 
   const addToCart = (menuId) => {
     const menu = menus.find((item) => item.id === menuId);
     if (!menu) return;
+
+    const existingQty = cart.find((item) => item.menuId === menuId)?.qty ?? 0;
+
+    if (existingQty >= menu.stock) {
+      pushToast(`Stok ${menu.name} sudah maksimal di keranjang.`, "info");
+      return;
+    }
 
     setCart((current) => {
       const existing = current.find((item) => item.menuId === menuId);
@@ -80,6 +130,13 @@ export default function App() {
       }
 
       return nextQty > 0 ? [...current, { menuId, qty: nextQty }] : current;
+    });
+
+    pushToast(`${menu.name} masuk keranjang.`);
+    addNotification({
+      type: "cart",
+      title: "Ditambahkan ke keranjang",
+      message: `${menu.name} · ${formatRupiah(menu.price)}`,
     });
   };
 
@@ -107,6 +164,12 @@ export default function App() {
     if (result.error) return result;
 
     setPromoCode(result.code);
+    pushToast(`Promo ${result.code} aktif.`);
+    addNotification({
+      type: "promo",
+      title: "Promo diterapkan",
+      message: `${result.code} · hemat ${formatRupiah(result.discount)}`,
+    });
     return result;
   };
 
@@ -150,6 +213,13 @@ export default function App() {
     setHistory((current) => [transaction, ...current]);
     setReceipt(transaction);
 
+    pushToast("Pembayaran berhasil. Struk sudah dibuat.");
+    addNotification({
+      type: "order",
+      title: "Pembayaran berhasil",
+      message: `${transaction.id} · ${formatRupiah(transaction.total)} via ${method}`,
+    });
+
     return { transaction };
   };
 
@@ -158,6 +228,13 @@ export default function App() {
     setHistory([]);
     setCart([]);
     setPromoCode("");
+
+    pushToast("Riwayat dan stok sudah direset.");
+    addNotification({
+      type: "reset",
+      title: "Riwayat direset",
+      message: "Stok kembali ke nilai awal, riwayat dan keranjang dikosongkan.",
+    });
   };
 
   return (
@@ -169,6 +246,11 @@ export default function App() {
         onOpenCart={() => setCartOpen(true)}
         historyCount={history.length}
         onOpenHistory={() => setHistoryOpen(true)}
+        unreadCount={unreadCount}
+        onOpenNotifications={() => {
+          markAllRead();
+          setNotificationsOpen(true);
+        }}
       />
       <MainContent
         menus={menus}
@@ -204,6 +286,15 @@ export default function App() {
           onReset={resetTransactions}
         />
       )}
+
+      {notificationsOpen && (
+        <NotificationModal
+          notifications={notifications}
+          onClose={() => setNotificationsOpen(false)}
+        />
+      )}
+
+      <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
