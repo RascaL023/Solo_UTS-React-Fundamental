@@ -3,6 +3,7 @@ import menuData from "./data/menu.js";
 import CartDrawer from "./components/CartDrawer.jsx";
 import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
+import HistoryModal from "./components/HistoryModal.jsx";
 import MainContent from "./components/MainContent.jsx";
 import ReceiptModal from "./components/ReceiptModal.jsx";
 import { useLocalStorage } from "./hooks/useLocalStorage.js";
@@ -17,8 +18,10 @@ export default function App() {
   const [comments, setComments] = useLocalStorage("waras:comments", {});
   const [stock, setStock] = useLocalStorage("waras:stock", initialStock);
   const [cart, setCart] = useLocalStorage("waras:cart", []);
+  const [history, setHistory] = useLocalStorage("waras:history", []);
   const [promoCode, setPromoCode] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [receipt, setReceipt] = useState(null);
 
   const menus = useMemo(
@@ -144,9 +147,17 @@ export default function App() {
     setCart([]);
     setPromoCode("");
     setCartOpen(false);
+    setHistory((current) => [transaction, ...current]);
     setReceipt(transaction);
 
     return { transaction };
+  };
+
+  const resetTransactions = () => {
+    setStock({ ...initialStock });
+    setHistory([]);
+    setCart([]);
+    setPromoCode("");
   };
 
   return (
@@ -156,6 +167,8 @@ export default function App() {
         onToggleTheme={toggleTheme}
         cartCount={cartCount}
         onOpenCart={() => setCartOpen(true)}
+        historyCount={history.length}
+        onOpenHistory={() => setHistoryOpen(true)}
       />
       <MainContent
         menus={menus}
@@ -183,6 +196,14 @@ export default function App() {
       )}
 
       {receipt && <ReceiptModal transaction={receipt} onClose={() => setReceipt(null)} />}
+
+      {historyOpen && (
+        <HistoryModal
+          transactions={history}
+          onClose={() => setHistoryOpen(false)}
+          onReset={resetTransactions}
+        />
+      )}
     </div>
   );
 }
