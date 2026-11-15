@@ -15,13 +15,65 @@ import { calculateTotals, formatRupiah, validatePromo } from "./utils/pricing.js
 
 const initialStock = Object.fromEntries(menuData.map((menu) => [menu.id, menu.stock]));
 
+function isRecord(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isFavoriteMap(value) {
+  return isRecord(value) && Object.values(value).every(Number.isFinite);
+}
+
+function isCommentMap(value) {
+  return isRecord(value) && Object.values(value).every(Array.isArray);
+}
+
+function isStockMap(value) {
+  return (
+    isRecord(value) &&
+    Object.values(value).every((stock) => Number.isFinite(stock) && stock >= 0)
+  );
+}
+
+function isCart(value) {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        isRecord(item) &&
+        typeof item.menuId === "string" &&
+        Number.isInteger(item.qty) &&
+        item.qty > 0,
+    )
+  );
+}
+
+function isTransaction(value) {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    Number.isFinite(value.total) &&
+    Array.isArray(value.items) &&
+    value.items.every(
+      (item) =>
+        isRecord(item) &&
+        typeof item.name === "string" &&
+        Number.isFinite(item.price) &&
+        Number.isFinite(item.qty),
+    )
+  );
+}
+
+function isHistory(value) {
+  return Array.isArray(value) && value.every(isTransaction);
+}
+
 export default function App() {
   const { theme, toggleTheme } = useTheme();
-  const [favorites, setFavorites] = useLocalStorage("waras:favorites", {});
-  const [comments, setComments] = useLocalStorage("waras:comments", {});
-  const [stock, setStock] = useLocalStorage("waras:stock", initialStock);
-  const [cart, setCart] = useLocalStorage("waras:cart", []);
-  const [history, setHistory] = useLocalStorage("waras:history", []);
+  const [favorites, setFavorites] = useLocalStorage("waras:favorites", {}, isFavoriteMap);
+  const [comments, setComments] = useLocalStorage("waras:comments", {}, isCommentMap);
+  const [stock, setStock] = useLocalStorage("waras:stock", initialStock, isStockMap);
+  const [cart, setCart] = useLocalStorage("waras:cart", [], isCart);
+  const [history, setHistory] = useLocalStorage("waras:history", [], isHistory);
   const [promoCode, setPromoCode] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -37,7 +89,10 @@ export default function App() {
 
   const cartItems = cart.flatMap(({ menuId, qty }) => {
     const menu = menus.find((item) => item.id === menuId);
-    return menu ? [{ ...menu, qty }] : [];
+    if (!menu) return [];
+
+    const safeQty = Math.min(qty, menu.stock);
+    return safeQty > 0 ? [{ ...menu, qty: safeQty }] : [];
   });
 
   const totals = calculateTotals(cartItems, promoCode);

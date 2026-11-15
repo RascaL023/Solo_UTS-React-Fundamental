@@ -76,7 +76,7 @@ export default function HistoryModal({ transactions, onClose, onReset }) {
             <button
               type="button"
               onClick={() => setConfirming(false)}
-              className="flex-1 rounded-full border border-line px-3 py-2 text-sm font-semibold transition hover:border-brand"
+              className="flex-1 rounded-full border border-line px-3 py-2.5 text-sm font-semibold transition hover:border-brand"
             >
               Batal
             </button>
@@ -86,7 +86,7 @@ export default function HistoryModal({ transactions, onClose, onReset }) {
                 onReset();
                 setConfirming(false);
               }}
-              className="flex-1 rounded-full bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+              className="flex-1 rounded-full bg-red-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
             >
               Ya, reset
             </button>

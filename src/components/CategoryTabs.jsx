@@ -14,7 +14,7 @@ export default function CategoryTabs({ tabs, activeCategory, onChange }) {
             type="button"
             onClick={() => onChange(label)}
             aria-pressed={isActive}
-            className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition ${
+            className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium transition ${
               isActive
                 ? "border-brand bg-brand text-white"
                 : "border-line bg-surface-2 text-ink hover:border-brand hover:text-brand-strong"

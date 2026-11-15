@@ -11,7 +11,7 @@ export default function EmptyState({ title, message, actionLabel = "Reset filter
       <button
         type="button"
         onClick={onReset}
-        className="mt-5 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong"
+        className="mt-5 rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-strong"
       >
         {actionLabel}
       </button>

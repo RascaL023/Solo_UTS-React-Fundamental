@@ -4,7 +4,12 @@ import { useLocalStorage } from "./useLocalStorage.js";
 const MAX_NOTIFICATIONS = 30;
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useLocalStorage("waras:notifications", []);
+  const [notifications, setNotifications] = useLocalStorage(
+    "waras:notifications",
+    [],
+    (value) =>
+      Array.isArray(value) && value.every((item) => item && typeof item === "object"),
+  );
 
   const addNotification = useCallback(
     ({ type, title, message }) => {

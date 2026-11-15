@@ -42,7 +42,7 @@ export default function CartDrawer({
             type="button"
             onClick={onClose}
             aria-label="Tutup keranjang"
-            className="grid size-8 place-items-center rounded-full border border-line text-muted transition hover:border-brand hover:text-brand-strong"
+            className="grid size-10 place-items-center rounded-full border border-line text-muted transition hover:border-brand hover:text-brand-strong"
           >
             <X size={16} aria-hidden="true" />
           </button>
@@ -55,7 +55,7 @@ export default function CartDrawer({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-strong"
+              className="rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-strong"
             >
               Pilih menu
             </button>
@@ -70,12 +70,12 @@ export default function CartDrawer({
                     <p className="mt-0.5 text-xs text-muted">
                       {formatRupiah(item.price)} · sisa {item.stock}
                     </p>
-                    <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-line px-1.5 py-1">
+                    <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-line p-0.5">
                       <button
                         type="button"
                         onClick={() => onChangeQty(item.id, item.qty - 1)}
                         aria-label={`Kurangi ${item.name}`}
-                        className="grid size-6 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink"
+                        className="grid size-10 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink"
                       >
                         <Minus size={12} aria-hidden="true" />
                       </button>
@@ -85,7 +85,7 @@ export default function CartDrawer({
                         disabled={item.qty >= item.stock}
                         onClick={() => onChangeQty(item.id, item.qty + 1)}
                         aria-label={`Tambah ${item.name}`}
-                        className="grid size-6 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+                        className="grid size-10 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <Plus size={12} aria-hidden="true" />
                       </button>
@@ -100,7 +100,7 @@ export default function CartDrawer({
                       type="button"
                       onClick={() => onRemoveItem(item.id)}
                       aria-label={`Hapus ${item.name} dari keranjang`}
-                      className="text-muted transition hover:text-red-500"
+                      className="grid size-10 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-red-500"
                     >
                       <Trash2 size={15} aria-hidden="true" />
                     </button>
@@ -181,11 +181,11 @@ function PromoAndCheckout({ totals, promoCode, onApplyPromo, onClearPromo, onChe
               value={promoInput}
               onChange={(event) => setPromoInput(event.target.value)}
               placeholder="Kode promo"
-              className="min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 py-2 text-sm uppercase placeholder:normal-case placeholder:text-muted focus:border-brand focus:outline-none"
+              className="min-w-0 flex-1 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm uppercase placeholder:normal-case placeholder:text-muted focus:border-brand focus:outline-none"
             />
             <button
               type="submit"
-              className="rounded-xl border border-line px-3 py-2 text-xs font-semibold text-ink transition hover:border-brand hover:text-brand-strong"
+              className="rounded-xl border border-line px-3 py-2.5 text-xs font-semibold text-ink transition hover:border-brand hover:text-brand-strong"
             >
               Pakai
             </button>
@@ -228,7 +228,7 @@ function PromoAndCheckout({ totals, promoCode, onApplyPromo, onClearPromo, onChe
               type="button"
               onClick={() => setMethod(option)}
               aria-pressed={method === option}
-              className={`rounded-xl border px-3 py-2 text-sm font-medium transition ${
+              className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition ${
                 method === option
                   ? "border-brand bg-brand-soft text-brand-strong"
                   : "border-line text-muted hover:border-brand"

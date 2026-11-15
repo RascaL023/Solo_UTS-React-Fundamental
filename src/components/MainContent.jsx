@@ -216,14 +216,14 @@ export default function MainContent({
                 if (event.key === "Escape") setQuery("");
               }}
               placeholder="Cari kopi, makanan, atau camilan…"
-              className="w-full rounded-xl border border-line bg-surface py-3 pl-10 pr-11 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
+              className="w-full rounded-xl border border-line bg-surface py-3 pl-10 pr-12 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
             />
             {query !== "" && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Hapus pencarian"
-                className="absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink"
+                className="absolute right-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink"
               >
                 <X size={16} aria-hidden="true" />
               </button>

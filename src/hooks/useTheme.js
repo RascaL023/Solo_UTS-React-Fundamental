@@ -6,7 +6,11 @@ function getPreferredTheme() {
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useLocalStorage("waras:theme", getPreferredTheme);
+  const [theme, setTheme] = useLocalStorage(
+    "waras:theme",
+    getPreferredTheme,
+    (value) => value === "light" || value === "dark",
+  );
 
   useEffect(() => {
     const root = document.documentElement;

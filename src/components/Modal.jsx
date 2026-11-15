@@ -28,7 +28,7 @@ export default function Modal({ open, title, onClose, children }) {
             type="button"
             onClick={onClose}
             aria-label="Tutup dialog"
-            className="grid size-8 shrink-0 place-items-center rounded-full border border-line text-muted transition hover:border-brand hover:text-brand-strong"
+            className="grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted transition hover:border-brand hover:text-brand-strong"
           >
             <X size={16} aria-hidden="true" />
           </button>

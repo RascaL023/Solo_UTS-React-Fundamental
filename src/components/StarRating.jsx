@@ -29,7 +29,7 @@ export default function StarRating({ value, onChange, size = 18, readOnly = fals
           onClick={() => onChange(star)}
           aria-label={`${star} bintang`}
           aria-pressed={star === value}
-          className="rounded-full p-0.5 transition hover:scale-110"
+          className="grid size-10 place-items-center rounded-full transition hover:scale-110"
         >
           <Star
             size={size}

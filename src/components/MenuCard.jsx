@@ -1,7 +1,7 @@
 import { Heart, Info, MessageCircle, Plus, Star } from "lucide-react";
 
 const iconButtonClass =
-  "grid size-8 place-items-center rounded-full border border-line bg-surface-2 text-muted transition hover:border-brand hover:text-brand-strong";
+  "grid size-10 place-items-center rounded-full border border-line bg-surface-2 text-muted transition hover:border-brand hover:text-brand-strong";
 
 export default function MenuCard({
   menu,
@@ -36,7 +36,7 @@ export default function MenuCard({
           aria-label={favoriteLabel}
           aria-pressed={isFavorite}
           title={favoriteLabel}
-          className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full border backdrop-blur transition ${
+          className={`absolute right-3 top-3 grid size-10 place-items-center rounded-full border backdrop-blur transition ${
             isFavorite
               ? "border-red-200/80 bg-white text-red-500"
               : "border-white/40 bg-black/30 text-white hover:bg-black/50"
@@ -68,7 +68,7 @@ export default function MenuCard({
           {menu.description}
         </p>
 
-        <div className="mt-4 flex items-end justify-between gap-2">
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-2">
           <div>
             <span className="block text-base font-semibold text-brand-strong">
               Rp{menu.price.toLocaleString("id-ID")}
@@ -83,7 +83,7 @@ export default function MenuCard({
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => onOpenInfo(menu)}
@@ -117,7 +117,7 @@ export default function MenuCard({
                   : `Tambah ${menu.name} ke keranjang`
               }
               title={isStockLimit ? "Stok maksimal tercapai" : "Tambah ke keranjang"}
-              className="grid size-8 place-items-center rounded-full bg-brand text-white transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-40"
+              className="grid size-10 place-items-center rounded-full bg-brand text-white transition hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Plus size={16} aria-hidden="true" />
             </button>

@@ -35,7 +35,7 @@ function Toast({ toast, onDismiss }) {
         type="button"
         onClick={() => onDismiss(toast.id)}
         aria-label="Tutup notifikasi singkat"
-        className="text-muted transition hover:text-ink"
+        className="-my-1 -mr-2 grid size-10 shrink-0 place-items-center rounded-full text-muted transition hover:bg-surface-3 hover:text-ink"
       >
         <X size={14} aria-hidden="true" />
       </button>
