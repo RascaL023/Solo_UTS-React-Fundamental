@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { ArrowRight, ArrowUpDown, Search, Sparkles, Star, X } from "lucide-react";
 import CategoryTabs from "./CategoryTabs.jsx";
+import CommentModal from "./CommentModal.jsx";
 import EmptyState from "./EmptyState.jsx";
 import MenuCard from "./MenuCard.jsx";
+import MenuInfoModal from "./MenuInfoModal.jsx";
 
 const ALL_CATEGORY = "Semua";
 const FAVORITE_CATEGORY = "Favorit";
@@ -41,10 +43,18 @@ function sortByFavorite(menus, favorites, sortBy) {
   }
 }
 
-export default function MainContent({ menus, favorites, onToggleFavorite }) {
+export default function MainContent({
+  menus,
+  favorites,
+  onToggleFavorite,
+  comments,
+  onAddComment,
+}) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY);
   const [sortBy, setSortBy] = useState("newest");
+  const [infoMenu, setInfoMenu] = useState(null);
+  const [commentMenu, setCommentMenu] = useState(null);
   const searchTerm = query.trim().toLowerCase();
 
   const averageRating =
@@ -274,6 +284,9 @@ export default function MainContent({ menus, favorites, onToggleFavorite }) {
                 menu={menu}
                 isFavorite={Boolean(favorites[menu.id])}
                 onToggleFavorite={onToggleFavorite}
+                onOpenInfo={setInfoMenu}
+                onOpenComment={setCommentMenu}
+                commentCount={(comments[menu.id] ?? []).length}
               />
             ))}
           </div>
@@ -286,6 +299,25 @@ export default function MainContent({ menus, favorites, onToggleFavorite }) {
           />
         )}
       </section>
+
+      {infoMenu && (
+        <MenuInfoModal
+          open
+          menu={infoMenu}
+          comments={comments[infoMenu.id] ?? []}
+          onClose={() => setInfoMenu(null)}
+        />
+      )}
+      {commentMenu && (
+        <CommentModal
+          key={commentMenu.id}
+          open
+          menu={commentMenu}
+          comments={comments[commentMenu.id] ?? []}
+          onClose={() => setCommentMenu(null)}
+          onSubmit={onAddComment}
+        />
+      )}
     </main>
   );
 }

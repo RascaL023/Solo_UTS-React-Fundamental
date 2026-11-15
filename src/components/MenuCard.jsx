@@ -1,6 +1,16 @@
-import { Heart, Star } from "lucide-react";
+import { Heart, Info, MessageCircle, Star } from "lucide-react";
 
-export default function MenuCard({ menu, isFavorite, onToggleFavorite }) {
+const iconButtonClass =
+  "grid size-8 place-items-center rounded-full border border-line bg-surface-2 text-muted transition hover:border-brand hover:text-brand-strong";
+
+export default function MenuCard({
+  menu,
+  isFavorite,
+  onToggleFavorite,
+  onOpenInfo,
+  onOpenComment,
+  commentCount,
+}) {
   const isLowStock = menu.stock <= 10;
   const favoriteLabel = isFavorite
     ? `Hapus ${menu.name} dari favorit`
@@ -55,17 +65,45 @@ export default function MenuCard({ menu, isFavorite, onToggleFavorite }) {
           {menu.description}
         </p>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="text-base font-semibold text-brand-strong">
-            Rp{menu.price.toLocaleString("id-ID")}
-          </span>
-          <span
-            className={`rounded-full px-2 py-1 text-[11px] font-medium ${
-              isLowStock ? "bg-brand-soft text-brand-strong" : "bg-leaf-soft text-leaf"
-            }`}
-          >
-            Sisa {menu.stock}
-          </span>
+        <div className="mt-4 flex items-end justify-between gap-2">
+          <div>
+            <span className="block text-base font-semibold text-brand-strong">
+              Rp{menu.price.toLocaleString("id-ID")}
+            </span>
+            <span
+              className={`mt-1 block text-[11px] ${
+                isLowStock ? "text-brand-strong" : "text-muted"
+              }`}
+            >
+              Sisa {menu.stock}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onOpenInfo(menu)}
+              aria-label={`Lihat info ${menu.name}`}
+              title="Info menu"
+              className={iconButtonClass}
+            >
+              <Info size={16} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onOpenComment(menu)}
+              aria-label={`Buka komentar ${menu.name}`}
+              title="Komentar"
+              className={`relative ${iconButtonClass}`}
+            >
+              <MessageCircle size={16} aria-hidden="true" />
+              {commentCount > 0 && (
+                <span className="absolute -right-1 -top-1 grid min-w-4 place-items-center rounded-full bg-brand px-1 text-[10px] font-semibold text-white">
+                  {commentCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </article>

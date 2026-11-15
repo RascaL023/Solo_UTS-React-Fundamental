@@ -8,6 +8,7 @@ import { useTheme } from "./hooks/useTheme.js";
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const [favorites, setFavorites] = useLocalStorage("waras:favorites", {});
+  const [comments, setComments] = useLocalStorage("waras:comments", {});
 
   const toggleFavorite = (menuId) => {
     setFavorites((current) => {
@@ -23,6 +24,20 @@ export default function App() {
     });
   };
 
+  const addComment = (menuId, { rating, text }) => {
+    const comment = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      rating,
+      text,
+      createdAt: new Date().toISOString(),
+    };
+
+    setComments((current) => ({
+      ...current,
+      [menuId]: [comment, ...(current[menuId] ?? [])],
+    }));
+  };
+
   return (
     <div id="atas" className="flex min-h-dvh flex-col bg-surface text-ink">
       <Header theme={theme} onToggleTheme={toggleTheme} />
@@ -30,6 +45,8 @@ export default function App() {
         menus={menus}
         favorites={favorites}
         onToggleFavorite={toggleFavorite}
+        comments={comments}
+        onAddComment={addComment}
       />
       <Footer />
     </div>
