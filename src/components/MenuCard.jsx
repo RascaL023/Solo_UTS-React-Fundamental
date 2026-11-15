@@ -1,11 +1,14 @@
-import { Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 
-export default function MenuCard({ menu }) {
+export default function MenuCard({ menu, isFavorite, onToggleFavorite }) {
   const isLowStock = menu.stock <= 10;
+  const favoriteLabel = isFavorite
+    ? `Hapus ${menu.name} dari favorit`
+    : `Tambahkan ${menu.name} ke favorit`;
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-line bg-surface-2 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-      <div className="aspect-[4/3] overflow-hidden bg-surface-3">
+      <div className="relative aspect-[4/3] overflow-hidden bg-surface-3">
         <img
           src={menu.image}
           alt={menu.name}
@@ -14,6 +17,24 @@ export default function MenuCard({ menu }) {
           height="600"
           className="size-full object-cover transition duration-500 group-hover:scale-105"
         />
+        <button
+          type="button"
+          onClick={() => onToggleFavorite(menu.id)}
+          aria-label={favoriteLabel}
+          aria-pressed={isFavorite}
+          title={favoriteLabel}
+          className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full border backdrop-blur transition ${
+            isFavorite
+              ? "border-red-200/80 bg-white text-red-500"
+              : "border-white/40 bg-black/30 text-white hover:bg-black/50"
+          }`}
+        >
+          <Heart
+            size={17}
+            aria-hidden="true"
+            className={isFavorite ? "fill-red-500" : undefined}
+          />
+        </button>
       </div>
 
       <div className="p-4">

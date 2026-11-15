@@ -1,11 +1,19 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, Search, Sparkles, Star, X } from "lucide-react";
+import { ArrowRight, ArrowUpDown, Search, Sparkles, Star, X } from "lucide-react";
 import CategoryTabs from "./CategoryTabs.jsx";
 import EmptyState from "./EmptyState.jsx";
 import MenuCard from "./MenuCard.jsx";
 
 const ALL_CATEGORY = "Semua";
+const FAVORITE_CATEGORY = "Favorit";
 const CATEGORIES = ["Kopi", "Non-Kopi", "Makanan", "Snack"];
+const SORT_OPTIONS = [
+  { value: "newest", label: "Terbaru" },
+  { value: "oldest", label: "Terlama" },
+  { value: "price", label: "Harga terendah" },
+  { value: "rating", label: "Rating tertinggi" },
+  { value: "name", label: "Nama A–Z" },
+];
 
 function matchesQuery(menu, searchTerm) {
   if (!searchTerm) return true;
@@ -16,9 +24,27 @@ function matchesQuery(menu, searchTerm) {
   );
 }
 
-export default function MainContent({ menus }) {
+function sortByFavorite(menus, favorites, sortBy) {
+  const sorted = [...menus];
+
+  switch (sortBy) {
+    case "oldest":
+      return sorted.sort((a, b) => favorites[a.id] - favorites[b.id]);
+    case "price":
+      return sorted.sort((a, b) => a.price - b.price);
+    case "rating":
+      return sorted.sort((a, b) => b.rating - a.rating);
+    case "name":
+      return sorted.sort((a, b) => a.name.localeCompare(b.name, "id"));
+    default:
+      return sorted.sort((a, b) => favorites[b.id] - favorites[a.id]);
+  }
+}
+
+export default function MainContent({ menus, favorites, onToggleFavorite }) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY);
+  const [sortBy, setSortBy] = useState("newest");
   const searchTerm = query.trim().toLowerCase();
 
   const averageRating =
@@ -27,12 +53,24 @@ export default function MainContent({ menus }) {
 
   const filteredMenus = useMemo(
     () =>
-      menus.filter(
-        (menu) =>
-          (activeCategory === ALL_CATEGORY || menu.category === activeCategory) &&
-          matchesQuery(menu, searchTerm),
-      ),
-    [menus, activeCategory, searchTerm],
+      menus.filter((menu) => {
+        const matchesCategory =
+          activeCategory === ALL_CATEGORY ||
+          (activeCategory === FAVORITE_CATEGORY
+            ? Boolean(favorites[menu.id])
+            : menu.category === activeCategory);
+
+        return matchesCategory && matchesQuery(menu, searchTerm);
+      }),
+    [menus, favorites, activeCategory, searchTerm],
+  );
+
+  const visibleMenus = useMemo(
+    () =>
+      activeCategory === FAVORITE_CATEGORY
+        ? sortByFavorite(filteredMenus, favorites, sortBy)
+        : filteredMenus,
+    [filteredMenus, favorites, activeCategory, sortBy],
   );
 
   const tabs = useMemo(() => {
@@ -44,10 +82,29 @@ export default function MainContent({ menus }) {
         label: category,
         count: searchedMenus.filter((menu) => menu.category === category).length,
       })),
+      {
+        label: FAVORITE_CATEGORY,
+        count: searchedMenus.filter((menu) => favorites[menu.id]).length,
+      },
     ];
-  }, [menus, searchTerm]);
+  }, [menus, searchTerm, favorites]);
 
+  const favoriteCount = menus.filter((menu) => favorites[menu.id]).length;
+  const isFavoriteView = activeCategory === FAVORITE_CATEGORY;
   const hasActiveFilter = activeCategory !== ALL_CATEGORY || searchTerm !== "";
+  const showFavoritesEmptyState = isFavoriteView && favoriteCount === 0 && searchTerm === "";
+
+  let emptyTitle = "Menu tidak ditemukan";
+  let emptyMessage = "Belum ada menu di kategori ini.";
+  let emptyActionLabel = "Reset filter";
+
+  if (showFavoritesEmptyState) {
+    emptyTitle = "Belum ada favorit";
+    emptyMessage = "Tekan ikon hati pada kartu menu untuk menyimpannya di sini.";
+    emptyActionLabel = "Jelajahi menu";
+  } else if (searchTerm !== "") {
+    emptyMessage = `Tidak ada menu yang cocok dengan “${query.trim()}”. Coba kata kunci lain atau reset filter.`;
+  }
 
   const resetFilters = () => {
     setQuery("");
@@ -172,30 +229,61 @@ export default function MainContent({ menus }) {
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p role="status" aria-live="polite" className="text-sm text-muted">
-            Menampilkan <span className="font-semibold text-ink">{filteredMenus.length}</span>{" "}
+            Menampilkan <span className="font-semibold text-ink">{visibleMenus.length}</span>{" "}
             dari {menus.length} menu
             {activeCategory !== ALL_CATEGORY ? ` · ${activeCategory}` : ""}
             {searchTerm !== "" ? ` · “${query.trim()}”` : ""}
           </p>
-          {hasActiveFilter && (
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="rounded-full border border-line px-3 py-1.5 text-xs font-medium text-muted transition hover:border-brand hover:text-brand-strong"
-            >
-              Reset filter
-            </button>
-          )}
+
+          <div className="flex items-center gap-2">
+            {isFavoriteView && (
+              <label className="inline-flex items-center gap-2 text-xs text-muted">
+                <ArrowUpDown size={14} aria-hidden="true" />
+                <span className="sr-only">Urutkan favorit</span>
+                <select
+                  value={sortBy}
+                  onChange={(event) => setSortBy(event.target.value)}
+                  className="rounded-full border border-line bg-surface-2 px-3 py-1.5 text-xs text-ink focus:border-brand focus:outline-none"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+
+            {hasActiveFilter && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="rounded-full border border-line px-3 py-1.5 text-xs font-medium text-muted transition hover:border-brand hover:text-brand-strong"
+              >
+                Reset filter
+              </button>
+            )}
+          </div>
         </div>
 
-        {filteredMenus.length > 0 ? (
+        {visibleMenus.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredMenus.map((menu) => (
-              <MenuCard key={menu.id} menu={menu} />
+            {visibleMenus.map((menu) => (
+              <MenuCard
+                key={menu.id}
+                menu={menu}
+                isFavorite={Boolean(favorites[menu.id])}
+                onToggleFavorite={onToggleFavorite}
+              />
             ))}
           </div>
         ) : (
-          <EmptyState query={query.trim()} onReset={resetFilters} />
+          <EmptyState
+            title={emptyTitle}
+            message={emptyMessage}
+            actionLabel={emptyActionLabel}
+            onReset={resetFilters}
+          />
         )}
       </section>
     </main>
