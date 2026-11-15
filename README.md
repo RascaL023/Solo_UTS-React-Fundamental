@@ -12,10 +12,11 @@ Aplikasi katalog menu dan transaksi untuk Warkop Aswan. Dibuat sebagai proyek tu
 - **Info dan komentar** — popup info berisi detail menu dan rata-rata ulasan; popup komentar mendukung rating 1–5, komentar minimal 5 karakter, dan daftar komentar terbaru di posisi paling atas.
 - **Keranjang dan checkout** — tambah/kurangi/hapus item dengan batas stok, kode promo, pajak 10%, pembayaran Tunai (dengan kembalian) atau QRIS simulasi, lalu struk pesanan.
 - **Riwayat dan reset** — riwayat transaksi yang sudah dibayar, total belanja, serta reset in-app yang mengembalikan stok awal dan mengosongkan riwayat/keranjang.
+- **Notifikasi dan toast** — lonceng dengan badge jumlah belum dibaca, daftar notifikasi untuk aksi favorit/komentar/keranjang/promo/pesanan/reset, dan toast yang muncul otomatis lalu bisa ditutup. Membuka lonceng menandai semua notifikasi sudah dibaca.
 - **Tema terang/gelap** — mengikuti preferensi sistem, bisa diubah manual, dan tetap tersimpan setelah reload.
 - **UI responsif** — grid menu 1–4 kolom, tab kategori bisa digeser horizontal, dan dialog/drawer memiliki focus trap, dukungan Escape, serta pengembalian fokus.
 
-Belum diimplementasikan: notifikasi terpusat dan toast.
+Sisa pekerjaan: audit responsif/aksesibilitas dan verifikasi alur akhir.
 
 ## Teknologi
 
@@ -28,7 +29,7 @@ Belum diimplementasikan: notifikasi terpusat dan toast.
 
 ## Menjalankan
 
-Prasyarat: Node.js 22.13+ (atau 20.19+) dan pnpm.
+Prasyarat: Node.js 20.19.x atau 22.13+ dan pnpm.
 
 ```bash
 pnpm install
@@ -57,7 +58,7 @@ public/
 src/
 ├── components/           # header, footer, katalog, kartu, modal, drawer
 ├── data/menu.js          # 15 menu dengan 8 properti
-├── hooks/                # useLocalStorage, useTheme, useLockedOverlay
+├── hooks/                # useLocalStorage, useTheme, useNotifications, useLockedOverlay
 ├── utils/pricing.js      # promo, pajak, format Rupiah
 ├── App.jsx               # state utama dan komposisi halaman
 ├── index.css             # Tailwind, token tema, font
@@ -66,14 +67,14 @@ src/
 
 ## Arsitektur singkat
 
-- `App.jsx` memegang state persisten (tema, favorit, komentar, stok, keranjang, riwayat) dan meneruskan data/aksi ke komponen lewat props.
+- `App.jsx` mengoordinasikan state aplikasi (tema, favorit, komentar, stok, keranjang, riwayat) serta notifikasi/toast, lalu meneruskan data dan aksi lewat props.
 - `MainContent.jsx` menangani pencarian, filter, sortir, serta modal info dan komentar.
 - `src/utils/pricing.js` memusatkan perhitungan subtotal, diskon, pajak, total, dan format Rupiah.
 - `useLocalStorage` menangani penyimpanan; data rusak atau storage yang diblokir tidak boleh menghentikan render.
 
 ## Data dan aturan transaksi
 
-Setiap menu memiliki properti `id`, `name`, `category`, `price`, `stock`, `image`, `description`, dan `rating`. Data menu statis di `src/data/menu.js`—tidak ada API menu eksternal saat runtime.
+Setiap menu memiliki properti `id`, `name`, `category`, `price`, `stock`, `image`, `description`, dan `rating`. Data menu statis di `src/data/menu.js`—tidak ada API menu eksternal saat runtime. Semua transaksi disimulasikan di browser; tidak ada backend.
 
 Kode promo yang tersedia:
 
@@ -90,9 +91,9 @@ Reset transaksi mengembalikan stok ke nilai awal, mengosongkan riwayat dan keran
 ## Catatan teknis
 
 - Tailwind v4 tidak memakai `tailwind.config.js`; token warna, font, dan variabel tema dideklarasikan di `src/index.css`.
-- State persisten memakai kunci `waras:theme`, `waras:favorites`, `waras:comments`, `waras:stock`, `waras:cart`, dan `waras:history`.
+- State persisten memakai kunci `waras:theme`, `waras:favorites`, `waras:comments`, `waras:stock`, `waras:cart`, `waras:history`, dan `waras:notifications`.
 - Ikon wajib dari `lucide-react`; tidak ada Bootstrap/framework CSS lain atau CSS remote.
-- Interaksi memakai popup, drawer, atau pesan status inline—bukan `alert`, `prompt`, atau `confirm` bawaan browser.
+- Interaksi memakai popup, drawer, toast, atau pesan status inline—bukan `alert`, `prompt`, atau `confirm` bawaan browser.
 
 ## Kredit
 
