@@ -1,4 +1,4 @@
-import { Bell, Clock, Coffee, ReceiptText, ShoppingCart } from "lucide-react";
+import { Bell, Coffee, ReceiptText, ShoppingCart } from "lucide-react";
 import ThemeToggle from "./ThemeToggle.jsx";
 
 export default function Header({
@@ -29,11 +29,6 @@ export default function Header({
         </a>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <span className="hidden items-center gap-2 rounded-full border border-line px-3 py-2 text-xs text-muted sm:inline-flex">
-            <Clock size={14} className="text-brand" aria-hidden="true" />
-            08.00–22.00
-          </span>
-
           <button
             type="button"
             onClick={onOpenNotifications}

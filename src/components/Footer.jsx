@@ -21,7 +21,7 @@ export default function Footer() {
           <ul className="mt-3 space-y-2 text-sm">
             <li className="flex items-start gap-2">
               <MapPin size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
-              <span>Yogyakarta, Indonesia</span>
+              <span>Salatiga, Indonesia</span>
             </li>
             <li className="flex items-start gap-2">
               <Clock size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
@@ -37,12 +37,6 @@ export default function Footer() {
           <p className="mt-3 text-sm leading-relaxed text-muted">
             Menu, harga, dan jam buka adalah data contoh untuk tugas, bukan informasi resmi.
           </p>
-          <a
-            href="/images/CREDITS.md"
-            className="mt-3 inline-block text-sm font-medium text-brand-strong underline-offset-4 hover:underline"
-          >
-            Kredit foto
-          </a>
         </div>
       </div>
 

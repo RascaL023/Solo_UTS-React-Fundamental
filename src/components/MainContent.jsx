@@ -62,6 +62,8 @@ export default function MainContent({
   const averageRating =
     menus.reduce((total, menu) => total + menu.rating, 0) / menus.length;
   const categoryCount = new Set(menus.map((menu) => menu.category)).size;
+  const featuredMenu =
+    menus.find((menu) => menu.image === "/images/cappuccino.jpg") ?? menus[0];
 
   const filteredMenus = useMemo(
     () =>
@@ -125,7 +127,7 @@ export default function MainContent({
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-16 sm:px-6 lg:px-8">
-      <section className="relative mt-6 overflow-hidden rounded-3xl border border-line bg-surface-2 px-6 py-12 sm:px-10 sm:py-16">
+      <section className="relative mt-6 overflow-hidden rounded-3xl border border-line bg-surface-2">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-brand-soft blur-3xl"
@@ -135,52 +137,82 @@ export default function MainContent({
           className="pointer-events-none absolute -bottom-24 -left-16 size-64 rounded-full bg-leaf-soft blur-3xl"
         />
 
-        <div className="relative max-w-2xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs text-muted">
-            <Sparkles size={14} className="text-brand" aria-hidden="true" />
-            Warkop Aswan · Yogyakarta
-          </span>
-
-          <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-            Ngopi santai,
-            <span className="block text-brand-strong">harga bersahabat.</span>
-          </h1>
-
-          <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
-            Kopi seduhan harian, minuman non-kopi, dan camilan hangat untuk menemani obrolan
-            sore di warkop.
-          </p>
-
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <a
-              href="#menu"
-              className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-strong"
-            >
-              Lihat menu
-              <ArrowRight size={16} aria-hidden="true" />
-            </a>
-            <span className="text-xs text-muted">
-              {menus.length} menu · {categoryCount} kategori
+        <div className="relative grid gap-10 p-6 sm:p-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:p-12">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs text-muted">
+              <Sparkles size={14} className="text-brand" aria-hidden="true" />
+              Warkop Aswan · Salatiga
             </span>
+
+            <h1 className="mt-5 text-[2.6rem] font-bold leading-[1.02] tracking-tight sm:text-6xl">
+              Ngopi santai,
+              <span className="block text-brand-strong">harga bersahabat.</span>
+            </h1>
+
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
+              Kopi seduhan harian, minuman non-kopi, dan camilan hangat untuk menemani obrolan
+              sore di warkop Salatiga.
+            </p>
+
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <a
+                href="#menu"
+                className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-strong"
+              >
+                Lihat menu
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
+              <span className="text-xs text-muted">
+                {menus.length} menu · {categoryCount} kategori
+              </span>
+            </div>
+
+            <dl className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t border-line pt-6">
+              <div>
+                <dt className="text-[11px] uppercase tracking-[0.14em] text-muted">Menu</dt>
+                <dd className="mt-1 text-lg font-semibold">{menus.length}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-[0.14em] text-muted">Kategori</dt>
+                <dd className="mt-1 text-lg font-semibold">{categoryCount}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-[0.14em] text-muted">Rating</dt>
+                <dd className="mt-1 inline-flex items-center gap-1 text-lg font-semibold">
+                  <Star size={14} className="fill-brand text-brand" aria-hidden="true" />
+                  {averageRating.toFixed(1)}
+                </dd>
+              </div>
+            </dl>
           </div>
 
-          <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-line pt-6">
-            <div>
-              <dt className="text-[11px] uppercase tracking-[0.14em] text-muted">Menu</dt>
-              <dd className="mt-1 text-lg font-semibold">{menus.length}</dd>
+          <figure className="relative mx-auto w-full max-w-md lg:max-w-none">
+            <div
+              aria-hidden="true"
+              className="absolute -inset-4 rounded-[2.4rem] bg-gradient-to-br from-brand-soft via-transparent to-leaf-soft blur-2xl"
+            />
+            <div className="relative overflow-hidden rounded-[1.8rem] border border-line bg-surface-3 shadow-2xl">
+              <img
+                src={featuredMenu.image}
+                alt={`${featuredMenu.name} dari WarAs`}
+                width="800"
+                height="600"
+                loading="eager"
+                fetchPriority="high"
+                className="aspect-[4/3] size-full object-cover"
+              />
+              <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-[#3a2418] shadow-sm">
+                Favorit warga Salatiga
+              </span>
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent p-5 pt-20 text-white">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/70">Signature</p>
+                <p className="mt-1 text-lg font-semibold">{featuredMenu.name}</p>
+                <p className="mt-0.5 text-sm text-white/80">
+                  Rp{featuredMenu.price.toLocaleString("id-ID")} · diseduh segar
+                </p>
+              </figcaption>
             </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-[0.14em] text-muted">Kategori</dt>
-              <dd className="mt-1 text-lg font-semibold">{categoryCount}</dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-[0.14em] text-muted">Rating</dt>
-              <dd className="mt-1 inline-flex items-center gap-1 text-lg font-semibold">
-                <Star size={14} className="fill-brand text-brand" aria-hidden="true" />
-                {averageRating.toFixed(1)}
-              </dd>
-            </div>
-          </dl>
+          </figure>
         </div>
       </section>
 
